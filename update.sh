@@ -23,9 +23,15 @@ echo "📝 提交变更: $MSG"
 git commit -m "$MSG"
 
 echo "🚀 推送到 GitHub..."
-git push origin main
-
-echo ""
-echo "✅ 更新完成！"
-echo "🔗 网站地址: https://jiaoyun-wang.github.io/personal-website/"
-echo "⏱️  更新内容通常在 1 分钟内自动生效（GitHub Pages 自动部署）"
+if git push origin main; then
+  echo ""
+  echo "✅ 更新完成！"
+  echo "🔗 网站地址: https://jiaoyun-wang.github.io/personal-website/"
+  echo "⏱️  更新内容通常在 1 分钟内自动生效（GitHub Pages 自动部署）"
+else
+  echo ""
+  echo "❌ 推送失败（可能是网络问题）。"
+  echo "🔄 本地提交已保存，网络恢复后重试："
+  echo "   cd \"$(pwd)\" && git push origin main"
+  exit 1
+fi
