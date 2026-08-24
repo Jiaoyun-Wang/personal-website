@@ -3,22 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="王小柏的个人网站" />
-  <title>Wang Xiaobai · Personal Website</title>
+  <meta name="description" content="Olivia Wang 的个人网站" />
+  <meta name="theme-color" content="#f6f3f1" />
+  <title>Olivia Wang · Personal Website</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500&family=Noto+Serif+SC:wght@400&family=Noto+Serif+JP:wght@400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
+    /* ============================================================
+       设计系统 · "editorial tech journal on warm parchment"（Monad）
+       - 画布：羊皮纸暖白 #f6f3f1（绝不用纯白）
+       - 强调：湖泊蓝 #2b59d1（每个屏幕仅一个主行动）
+       - 结构：近黑 #242424 / 石墨 #4e4d4d / 烟灰 #797776 / 灰线 #cecac8
+       - 字体：衬线标题（400，绝不用粗体）+ 等宽正文（品牌声音）
+       - 形状：全部胶囊圆角（按钮 100px+ / 卡片 40px / 标签 9999px）
+       - 质感：1px 细线边框，无阴影；柔和粉彩渐变晕染作装饰
+       ============================================================ */
     :root {
-      --bg: #ffffff;
-      --bg-alt: #f6f7fb;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --accent: #4f46e5;
-      --accent-2: #7c3aed;
-      --accent-soft: #eef2ff;
-      --radius: 18px;
-      --shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
-      --shadow-lg: 0 20px 50px rgba(17, 24, 39, 0.1);
+      --canvas: #f6f3f1;      /* Parchment */
+      --surface: #f6f3f1;
+      --periwinkle: #cfdaf5;  /* 低强调面板 */
+      --lake: #2b59d1;        /* Lake Blue —— 唯一主行动色 */
+      --ink: #000000;         /* 公告栏 / 某些标题 */
+      --offblack: #242424;    /* 近黑：按钮、标题文字 */
+      --graphite: #4e4d4d;    /* 次级正文 */
+      --smoke: #797776;       /* 弱化文字 */
+      --ash: #cecac8;         /* 1px 细线边框 */
+      --white: #ffffff;
+
+      /* 装饰性粉彩（仅用于渐变晕染，不用于 UI 功能色） */
+      --sky: #a0b5eb;
+      --mint: #a7fccd;
+      --coral: #ff9473;
+      --gold: #ecda98;
+      --crimson: #f37a0a;
+
+      --r-card: 40px;         /* 卡片圆角 */
+      --r-pill: 9999px;       /* 胶囊圆角 */
+
+      --font-display: 'Source Serif 4', 'Noto Serif SC', 'Noto Serif JP', 'Songti SC', 'SimSun', serif;
+      --font-body: 'JetBrains Mono', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans JP', monospace;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,279 +50,434 @@
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-        "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans JP", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
+      font-family: var(--font-body);
+      background: var(--canvas);
+      color: var(--offblack);
+      line-height: 1.55;
+      font-size: 16px;
       -webkit-font-smoothing: antialiased;
     }
 
     a { color: inherit; text-decoration: none; }
     img { max-width: 100%; display: block; }
+    section[id] { scroll-margin-top: 96px; }
+    strong { font-weight: 500; }
 
-    /* ===== 导航栏 ===== */
+    /* ===== 顶部公告栏（黑色条带） ===== */
+    .announce {
+      background: var(--ink);
+      color: var(--canvas);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 10px 44px;
+      font-size: 0.84rem;
+      letter-spacing: 0.01em;
+      position: relative;
+      text-align: center;
+    }
+    .announce-right {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .announce-cta {
+      border: 1px solid var(--canvas);
+      color: var(--canvas);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 5px 14px;
+      border-radius: var(--r-pill);
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+    }
+    .announce-cta:hover { background: var(--canvas); color: var(--ink); }
+    .announce-close {
+      background: none; border: none;
+      color: var(--canvas);
+      font-size: 1.15rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 4px;
+      opacity: 0.8;
+    }
+    .announce-close:hover { opacity: 1; }
+    .announce.hidden { display: none; }
+
+    /* ===== 导航栏（sticky，羊皮纸 + 细线） ===== */
     header {
-      position: fixed;
-      top: 0; left: 0; width: 100%;
+      position: sticky;
+      top: 0;
       z-index: 100;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(246, 243, 241, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--ash);
     }
 
     .nav-inner {
-      max-width: 1140px;
+      max-width: 1160px;
       margin: 0 auto;
-      padding: 14px 24px;
+      padding: 16px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 18px;
     }
 
     .logo {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--offblack);
+      white-space: nowrap;
     }
-    .logo span { color: var(--accent); }
+    .logo span { color: var(--lake); }
 
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+    .nav-right { display: flex; align-items: center; gap: 20px; }
 
     .nav-links {
       display: flex;
       gap: 26px;
       list-style: none;
     }
-
     .nav-links a {
-      color: var(--muted);
-      font-size: 0.92rem;
+      color: var(--graphite);
+      font-size: 0.8rem;
       font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 0;
+      position: relative;
       transition: color 0.2s;
     }
-    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: -3px;
+      width: 100%; height: 1px;
+      background: var(--offblack);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s;
+    }
+    .nav-links a:hover { color: var(--offblack); }
+    .nav-links a:hover::after,
+    .nav-links a.active::after { transform: scaleX(1); }
+    .nav-links a.active { color: var(--offblack); }
 
     /* 语言切换 */
     .lang-switch {
       display: flex;
       gap: 2px;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: 999px;
+      border: 1px solid var(--ash);
+      border-radius: var(--r-pill);
       padding: 3px;
     }
     .lang-switch button {
       border: none;
       background: transparent;
       padding: 6px 13px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 600;
+      border-radius: var(--r-pill);
+      font-size: 0.72rem;
+      font-weight: 500;
       cursor: pointer;
-      color: var(--muted);
+      color: var(--graphite);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       transition: all 0.2s;
-      font-family: inherit;
+      font-family: var(--font-body);
     }
     .lang-switch button.active {
-      background: #fff;
-      color: var(--accent);
-      box-shadow: 0 2px 6px rgba(17, 24, 39, 0.08);
+      background: var(--offblack);
+      color: var(--canvas);
     }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      background: var(--offblack);
+      color: var(--canvas);
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 11px 22px;
+      border-radius: var(--r-pill);
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: var(--ink); }
 
     .menu-btn {
       display: none;
       background: none; border: none; cursor: pointer;
-      flex-direction: column; gap: 5px; padding: 4px;
+      flex-direction: column; gap: 5px; padding: 8px 10px;
     }
     .menu-btn span {
       width: 22px; height: 2px;
-      background: var(--text); border-radius: 2px;
+      background: var(--offblack); border-radius: 2px;
     }
 
-    /* ===== Hero ===== */
+    /* ===== Hero（居中 + 柔和渐变晕染） ===== */
     .hero {
-      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      min-height: 80vh;
       display: flex;
       align-items: center;
-      padding: 120px 24px 80px;
-      background:
-        radial-gradient(ellipse 60% 50% at 80% 10%, rgba(124, 58, 237, 0.08), transparent),
-        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(79, 70, 229, 0.07), transparent);
+      padding: 110px 24px 110px;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 520px; height: 520px;
+      left: -80px; top: -60px;
+      background: radial-gradient(circle, rgba(255,148,115,0.5), rgba(160,181,235,0.4) 55%, transparent 72%);
+      filter: blur(70px);
+      z-index: 0;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 560px; height: 560px;
+      right: -100px; bottom: -80px;
+      background: radial-gradient(circle, rgba(160,181,235,0.45), rgba(167,252,205,0.4) 55%, transparent 72%);
+      filter: blur(70px);
+      z-index: 0;
     }
 
     .hero-inner {
-      max-width: 1140px;
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 60px;
-      align-items: center;
+      text-align: center;
       width: 100%;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: var(--accent-soft);
-      color: var(--accent);
+      gap: 9px;
+      border: 1px solid var(--ash);
+      background: rgba(246,243,241,0.6);
+      color: var(--graphite);
       padding: 7px 16px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 22px;
+      border-radius: var(--r-pill);
+      font-size: 0.74rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 30px;
     }
     .badge .dot {
-      width: 8px; height: 8px;
-      background: #22c55e; border-radius: 50%;
+      width: 7px; height: 7px;
+      background: var(--mint); border-radius: 50%;
     }
 
-    .hero h1 {
-      font-size: clamp(2.4rem, 5.5vw, 3.8rem);
-      font-weight: 800;
-      letter-spacing: -1.5px;
-      line-height: 1.12;
-      margin-bottom: 18px;
+    .hero h1 { margin-bottom: 24px; }
+    .hero-kicker {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--graphite);
+      margin-bottom: 12px;
     }
-    .hero h1 .gradient {
-      background: linear-gradient(100deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .hero-name {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.7rem, 8vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--offblack);
     }
 
     .hero .subtitle {
-      color: var(--muted);
-      font-size: 1.15rem;
-      margin-bottom: 34px;
-      max-width: 480px;
+      color: var(--graphite);
+      font-size: 1.02rem;
+      line-height: 1.5;
+      margin: 0 auto 38px;
+      max-width: 560px;
     }
 
-    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
 
     .btn {
-      padding: 13px 30px;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.25s;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      padding: 16px 32px;
+      border-radius: var(--r-pill);
+      font-family: var(--font-body);
+      font-size: 0.86rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
     }
+    .btn .arr { font-size: 1rem; line-height: 1; }
     .btn-primary {
-      background: var(--text);
-      color: #fff;
+      background: var(--lake);
+      color: var(--white);
     }
-    .btn-primary:hover {
-      background: var(--accent);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.3);
+    .btn-primary:hover { background: #2348ad; }
+    .btn-dark {
+      background: var(--offblack);
+      color: var(--canvas);
     }
-    .btn-outline {
-      border: 1.5px solid var(--border);
-      color: var(--text);
-      background: #fff;
+    .btn-dark:hover { background: var(--ink); }
+    .btn-ghost {
+      border: 1px solid var(--offblack);
+      color: var(--offblack);
+      background: transparent;
     }
-    .btn-outline:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-2px);
+    .btn-ghost:hover {
+      background: var(--offblack);
+      color: var(--canvas);
     }
 
-    /* Hero 右侧卡片 */
-    .hero-visual {
-      display: flex;
-      justify-content: center;
-    }
+    /* Hero 身份卡 */
     .hero-card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: var(--shadow-lg);
-      padding: 34px;
-      width: 100%;
-      max-width: 380px;
-      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--ash);
+      border-radius: var(--r-card);
+      padding: 34px 38px;
+      max-width: 620px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .hero-card-top {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 26px;
     }
     .hero-avatar {
-      width: 96px; height: 96px;
+      width: 60px; height: 60px;
       border-radius: 50%;
-      margin: 0 auto 18px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff;
+      background: var(--periwinkle);
+      color: var(--offblack);
       display: flex; align-items: center; justify-content: center;
-      font-size: 2.6rem; font-weight: 700;
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      font-weight: 400;
+      flex-shrink: 0;
     }
-    .hero-card h3 { font-size: 1.3rem; margin-bottom: 4px; }
-    .hero-card .role { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+    .hero-card-top h3 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--offblack);
+      margin-bottom: 4px;
+    }
+    .hero-card-top .role {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--smoke);
+    }
     .hero-card .meta {
       display: grid;
-      gap: 10px;
-      text-align: left;
-      border-top: 1px solid var(--border);
-      padding-top: 18px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+      border-top: 1px solid var(--ash);
+      padding-top: 24px;
     }
-    .hero-card .meta div {
-      display: flex; justify-content: space-between;
-      font-size: 0.88rem;
+    .hero-card .meta .k {
+      display: block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--smoke);
+      margin-bottom: 5px;
     }
-    .hero-card .meta .k { color: var(--muted); }
+    .hero-card .meta .v {
+      font-size: 0.9rem;
+      color: var(--offblack);
+    }
 
     /* ===== 通用区块 ===== */
     section { padding: 96px 24px; }
-    .container { max-width: 1140px; margin: 0 auto; }
+    .container { max-width: 1160px; margin: 0 auto; }
 
-    .section-head { text-align: center; margin-bottom: 60px; }
+    .section-head { margin-bottom: 60px; }
+    .section-head.center { text-align: center; }
     .section-head .eyebrow {
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.72rem;
+      font-weight: 500;
       text-transform: uppercase;
-      margin-bottom: 10px;
+      letter-spacing: 0.12em;
+      color: var(--smoke);
+      margin-bottom: 18px;
+    }
+    .section-head .eyebrow::before {
+      content: "";
+      width: 22px; height: 1px;
+      background: var(--ash);
     }
     .section-head h2 {
-      font-size: clamp(1.9rem, 4vw, 2.6rem);
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      margin-bottom: 12px;
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(1.9rem, 4.5vw, 2.7rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--offblack);
+      margin-bottom: 14px;
     }
-    .section-head p { color: var(--muted); max-width: 560px; margin: 0 auto; }
+    .section-head p { color: var(--graphite); font-size: 0.95rem; max-width: 560px; }
+    .section-head.center p { margin: 0 auto; }
 
     /* ===== 关于 ===== */
-    #about { background: var(--bg-alt); }
     .about-grid {
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
+      grid-template-columns: 1.05fr 1fr;
       gap: 60px;
       align-items: center;
     }
-    .about-text p { color: var(--muted); margin-bottom: 16px; }
-    .about-text p strong { color: var(--text); }
+    .about-text p { color: var(--graphite); margin-bottom: 18px; font-size: 0.96rem; }
+    .about-text p strong { color: var(--offblack); }
 
-    .about-list { list-style: none; margin-top: 22px; display: grid; gap: 12px; }
+    .about-list { list-style: none; margin-top: 26px; display: grid; gap: 14px; }
     .about-list li {
-      display: flex; gap: 12px; align-items: flex-start;
-      color: var(--muted); font-size: 0.95rem;
+      display: flex; gap: 13px; align-items: center;
+      color: var(--offblack); font-size: 0.9rem;
     }
     .about-list li::before {
-      content: "✓";
+      content: "→";
       flex-shrink: 0;
-      width: 24px; height: 24px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 700;
+      color: var(--lake);
+      font-weight: 500;
+    }
+    .about-list--sub { margin-top: 8px; margin-bottom: 26px; gap: 10px; }
+    .about-list--sub li {
+      align-items: flex-start;
+      color: var(--graphite);
+      font-size: 0.86rem;
+    }
+    .about-list--sub li::before {
+      content: "—";
+      color: var(--ash);
+      font-weight: 400;
     }
 
     .stats-grid {
@@ -307,24 +486,29 @@
       gap: 20px;
     }
     .stat-card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 30px;
+      background: var(--surface);
+      border: 1px solid var(--ash);
+      border-radius: var(--r-card);
+      padding: 36px 30px;
       text-align: center;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: border-color 0.25s, background 0.25s;
     }
-    .stat-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-lg);
-    }
+    .stat-card:hover { border-color: #b6b2af; background: #fbf8f6; }
     .stat-card .number {
-      font-size: 2.4rem; font-weight: 800;
-      letter-spacing: -1px;
-      color: var(--accent);
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 3rem;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--offblack);
     }
-    .stat-card .label { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+    .stat-card .label {
+      color: var(--smoke);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 10px;
+    }
 
     /* ===== 技能 ===== */
     .skills-grid {
@@ -333,37 +517,40 @@
       gap: 22px;
     }
     .skill-card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s, box-shadow 0.3s;
+      background: var(--surface);
+      border: 1px solid var(--ash);
+      border-radius: var(--r-card);
+      padding: 34px 30px;
+      transition: border-color 0.25s, background 0.25s;
     }
-    .skill-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-lg);
-    }
+    .skill-card:hover { border-color: #b6b2af; background: #fbf8f6; }
     .skill-icon {
-      width: 52px; height: 52px;
-      background: var(--accent-soft);
+      width: 48px; height: 48px;
+      border: 1px solid var(--ash);
       border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-      margin-bottom: 18px;
+      font-size: 1.3rem;
+      color: var(--offblack);
+      margin-bottom: 20px;
     }
-    .skill-card h3 { font-size: 1.08rem; margin-bottom: 6px; }
-    .skill-card .desc { color: var(--muted); font-size: 0.88rem; margin-bottom: 16px; }
+    .skill-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .skill-card .desc { color: var(--graphite); font-size: 0.82rem; margin-bottom: 18px; }
     .skill-bar {
       height: 6px;
-      background: var(--bg-alt);
-      border-radius: 3px;
+      background: #eae4e0;
+      border-radius: var(--r-pill);
       overflow: hidden;
     }
     .skill-bar-fill {
       height: 100%;
-      border-radius: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: var(--r-pill);
+      background: var(--offblack);
       width: 0;
       transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     }
@@ -375,133 +562,191 @@
       gap: 24px;
     }
     .project-card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--ash);
+      border-radius: var(--r-card);
       overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: border-color 0.25s;
     }
-    .project-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-lg);
-    }
+    .project-card:hover { border-color: #b6b2af; }
     .project-cover {
-      height: 170px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3.4rem;
-      background: linear-gradient(135deg, var(--accent-soft), #f5f3ff);
+      height: 172px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 20px;
+      border-bottom: 1px solid var(--ash);
     }
-    .project-body { padding: 26px; }
-    .project-body h3 { font-size: 1.18rem; margin-bottom: 8px; }
-    .project-body p { color: var(--muted); font-size: 0.92rem; margin-bottom: 18px; }
+    .project-cover .num {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--offblack);
+    }
+    .g1 { background: linear-gradient(135deg, rgba(255,148,115,0.72), rgba(160,181,235,0.72)); }
+    .g2 { background: linear-gradient(135deg, rgba(160,181,235,0.72), rgba(167,252,205,0.72)); }
+    .g3 { background: linear-gradient(135deg, rgba(236,218,152,0.8), rgba(255,148,115,0.7)); }
+    .project-body { padding: 28px; }
+    .project-body h3 {
+      font-family: var(--font-display);
+      font-size: 1.28rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--offblack);
+      margin-bottom: 8px;
+    }
+    .project-body p { color: var(--graphite); font-size: 0.86rem; margin-bottom: 20px; }
     .tags { display: flex; gap: 8px; flex-wrap: wrap; }
     .tag {
-      font-size: 0.75rem; font-weight: 600;
-      padding: 5px 13px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--ash);
+      color: var(--offblack);
     }
 
     /* ===== 联系 ===== */
-    #contact { background: var(--bg-alt); }
     .contact-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 22px;
     }
     .contact-card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px;
+      background: var(--surface);
+      border: 1px solid var(--ash);
+      border-radius: var(--r-card);
+      padding: 34px 28px;
       text-align: center;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: border-color 0.25s, background 0.25s;
     }
-    .contact-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-lg);
+    .contact-card:hover { border-color: #b6b2af; background: #fbf8f6; }
+    .contact-icon {
+      width: 44px; height: 44px;
+      margin: 0 auto 16px;
+      border: 1px solid var(--ash);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem;
+      color: var(--offblack);
     }
-    .contact-icon { font-size: 1.9rem; margin-bottom: 14px; }
-    .contact-card h3 { font-size: 0.88rem; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
-    .contact-card p { font-weight: 700; word-break: break-all; }
+    .contact-card h3 {
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--smoke);
+      margin-bottom: 10px;
+    }
+    .contact-card p { font-size: 0.9rem; color: var(--offblack); word-break: break-all; }
+    .contact-card .email {
+      display: inline-block;
+      color: var(--lake);
+      font-weight: 500;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 0.2s;
+    }
+    .contact-card .email:hover { color: #2348ad; }
 
-    /* ===== 页脚 ===== */
+    /* ===== 页脚（黑色条带） ===== */
     footer {
       text-align: center;
-      padding: 34px 24px;
-      color: var(--muted);
-      font-size: 0.85rem;
-      border-top: 1px solid var(--border);
-      background: #fff;
+      padding: 42px 24px;
+      background: var(--ink);
+      color: var(--smoke);
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+    }
+    footer .foot-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      background: var(--mint);
+      border-radius: 50%;
+      margin: 0 10px;
+      vertical-align: middle;
     }
 
     /* 返回顶部 */
     .back-top {
       position: fixed;
       bottom: 26px; right: 26px;
-      width: 46px; height: 46px;
+      width: 48px; height: 48px;
       border-radius: 50%;
-      background: var(--text);
-      color: #fff;
+      background: var(--offblack);
+      color: var(--canvas);
       border: none; cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.3s, transform 0.3s;
-      box-shadow: var(--shadow-lg);
+      transition: opacity 0.3s, background 0.2s;
     }
     .back-top.show { opacity: 1; pointer-events: auto; }
-    .back-top:hover { background: var(--accent); transform: translateY(-4px); }
+    .back-top:hover { background: var(--ink); }
 
     /* 滚动显现 */
     .reveal {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(26px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
     /* ===== 响应式 ===== */
-    @media (max-width: 860px) {
-      .hero-inner, .about-grid {
+    @media (max-width: 880px) {
+      .about-grid {
         grid-template-columns: 1fr;
-        gap: 44px;
+        gap: 48px;
       }
-      .hero { padding-top: 100px; }
-      .hero-visual { order: 2; }
+      .hero { padding: 90px 24px 90px; }
     }
 
-    @media (max-width: 720px) {
-      .nav-right { gap: 12px; }
+    @media (max-width: 760px) {
+      .nav-cta { display: none; }
+      .nav-right { gap: 10px; }
+      .announce { justify-content: flex-start; padding: 10px 16px 10px 44px; }
       .nav-links {
         position: fixed;
-        top: 62px; right: 16px;
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: 14px;
+        top: 74px; right: 16px; left: 16px;
+        background: var(--surface);
+        border: 1px solid var(--ash);
+        border-radius: 24px;
         flex-direction: column;
-        padding: 18px 22px;
-        gap: 16px;
-        box-shadow: var(--shadow-lg);
+        align-items: stretch;
+        padding: 14px;
+        gap: 2px;
         transform: translateY(-16px);
         opacity: 0; pointer-events: none;
         transition: 0.25s;
       }
       .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+      .nav-links a { padding: 12px 8px; }
+      .nav-links a::after { display: none; }
       .menu-btn { display: flex; }
-      .lang-switch button { padding: 5px 10px; font-size: 0.78rem; }
+      .lang-switch button { padding: 5px 10px; font-size: 0.68rem; }
+      .hero-card .meta { grid-template-columns: 1fr; gap: 14px; }
+      .hero-name { font-size: clamp(2.4rem, 12vw, 3.6rem); }
     }
   </style>
 </head>
 <body>
 
+  <!-- 顶部公告栏 -->
+  <div class="announce" id="announce">
+    <p><span data-i18n="announce.text">可联系合作 · 期待与你交流</span></p>
+    <div class="announce-right">
+      <a href="#contact" class="announce-cta" data-i18n="announce.cta">联系我</a>
+      <button class="announce-close" id="announceClose" aria-label="关闭">×</button>
+    </div>
+  </div>
+
   <!-- 导航栏 -->
   <header id="header">
     <div class="nav-inner">
-      <a href="#home" class="logo">Wang<span>.</span>Xiaobai</a>
+      <a href="#home" class="logo">Olivia<span>.</span>Wang</a>
       <div class="nav-right">
         <ul class="nav-links" id="navLinks">
           <li><a href="#home" data-i18n="nav.home">首页</a></li>
@@ -515,6 +760,7 @@
           <button data-lang="en">EN</button>
           <button data-lang="ja">日本語</button>
         </div>
+        <a href="#contact" class="nav-cta"><span data-i18n="nav.cta">联系我</span></a>
         <button class="menu-btn" id="menuBtn" aria-label="菜单">
           <span></span><span></span><span></span>
         </button>
@@ -525,30 +771,30 @@
   <!-- Hero -->
   <section class="hero" id="home">
     <div class="hero-inner">
-      <div>
-        <div class="badge"><span class="dot"></span><span data-i18n="hero.badge">可联系合作</span></div>
-        <h1>
-          <span data-i18n="hero.hi">你好，我是</span><br />
-          <span class="gradient">Wang Xiaobai</span>
-        </h1>
-        <p class="subtitle" data-i18n="hero.subtitle">
-          产品经理 &amp; 开发者，专注于打造简洁、优雅且富有价值的数字产品。
-        </p>
-        <div class="hero-btns">
-          <a href="#projects" class="btn btn-primary" data-i18n="hero.cta1">查看项目</a>
-          <a href="#contact" class="btn btn-outline" data-i18n="hero.cta2">联系我</a>
-        </div>
+      <div class="badge"><span class="dot"></span><span data-i18n="hero.badge">可联系合作</span></div>
+      <h1>
+        <span class="hero-kicker" data-i18n="hero.hi">你好，我是</span>
+        <span class="hero-name">Olivia Wang</span>
+      </h1>
+      <p class="subtitle" data-i18n="hero.subtitle">
+        产品经理 &amp; 开发者，专注于打造简洁、优雅且富有价值的数字产品。
+      </p>
+      <div class="hero-btns">
+        <a href="#projects" class="btn btn-primary"><span data-i18n="hero.cta1">查看项目</span><span class="arr">▸</span></a>
+        <a href="#contact" class="btn btn-ghost"><span data-i18n="hero.cta2">联系我</span></a>
       </div>
-      <div class="hero-visual">
-        <div class="hero-card">
-          <div class="hero-avatar">W</div>
-          <h3>Wang Xiaobai</h3>
-          <p class="role" data-i18n="hero.role">产品经理 / 开发者</p>
-          <div class="meta">
-            <div><span class="k" data-i18n="hero.location">所在地</span><span>Beijing, China</span></div>
-            <div><span class="k" data-i18n="hero.exp">经验</span><span data-i18n="hero.expValue">5+ 年</span></div>
-            <div><span class="k" data-i18n="hero.focus">方向</span><span data-i18n="hero.focusValue">产品 · AI</span></div>
+      <div class="hero-card">
+        <div class="hero-card-top">
+          <div class="hero-avatar">O</div>
+          <div>
+            <h3>Olivia Wang</h3>
+            <p class="role" data-i18n="hero.role">产品经理 / 开发者</p>
           </div>
+        </div>
+        <div class="meta">
+          <div><span class="k" data-i18n="hero.location">所在地</span><span class="v">Beijing, China</span></div>
+          <div><span class="k" data-i18n="hero.exp">经验</span><span class="v" data-i18n="hero.expValue">5+ 年</span></div>
+          <div><span class="k" data-i18n="hero.focus">方向</span><span class="v" data-i18n="hero.focusValue">产品 · AI</span></div>
         </div>
       </div>
     </div>
@@ -564,12 +810,20 @@
       </div>
       <div class="about-grid">
         <div class="about-text reveal">
-          <p data-i18n="about.p1">你好！我是 <strong>王小柏</strong>，一名热爱产品与技术的产品经理，同时也是一名开发者。</p>
-          <p data-i18n="about.p2">我相信优秀的产品源于对用户需求的深刻理解与对细节的极致追求。我擅长将复杂的业务逻辑转化为简洁优雅的用户体验，并在产品与技术之间架起桥梁。</p>
+          <p data-i18n="about.p1">你好！我是 <strong>Olivia Wang</strong>，一名关注产品与技术的 AI 产品经理，也是一名持续实践的开发者。</p>
+          <p data-i18n="about.p2">我习惯从真实的用户问题出发，理解技术的边界与可能，再把复杂的业务逻辑和技术能力，转化为清晰、可靠、易用的产品体验。</p>
+          <p data-i18n="about.p3">在 AI 产品工作中，我不仅关注“能不能实现”，也会持续思考：</p>
+          <ul class="about-list about-list--sub">
+            <li data-i18n="about.t1">这个能力是否真正解决了用户问题</li>
+            <li data-i18n="about.t2">用户是否理解、信任并愿意使用它</li>
+            <li data-i18n="about.t3">如何通过持续验证，让产品变得更准确、更稳定、更有价值</li>
+          </ul>
+          <p data-i18n="about.p4">我相信，好的 AI 产品不只是模型能力的展示，更是技术、场景与用户体验之间的平衡。相比追逐概念，我更愿意沉下心来理解问题、验证假设，并在实践中不断迭代。</p>
           <ul class="about-list">
-            <li data-i18n="about.li1">以用户为中心的产品设计思维</li>
-            <li data-i18n="about.li2">跨职能团队协作与沟通</li>
-            <li data-i18n="about.li3">快速学习与持续迭代能力</li>
+            <li data-i18n="about.li1">以用户需求为起点，建立清晰的产品判断</li>
+            <li data-i18n="about.li2">理解 AI 技术能力与局限，推动技术落地为实际价值</li>
+            <li data-i18n="about.li3">善于在产品、技术与业务之间进行有效沟通</li>
+            <li data-i18n="about.li4">保持好奇，持续学习，也保持对细节和结果的耐心</li>
           </ul>
         </div>
         <div class="stats-grid">
@@ -604,25 +858,25 @@
       </div>
       <div class="skills-grid">
         <div class="skill-card reveal">
-          <div class="skill-icon">📋</div>
+          <div class="skill-icon">◉</div>
           <h3 data-i18n="skills.s1t">产品设计</h3>
           <p class="desc" data-i18n="skills.s1d">需求分析 · 原型设计 · 用户研究</p>
           <div class="skill-bar"><div class="skill-bar-fill" data-width="95%"></div></div>
         </div>
         <div class="skill-card reveal">
-          <div class="skill-icon">💻</div>
+          <div class="skill-icon">◇</div>
           <h3 data-i18n="skills.s2t">前端开发</h3>
           <p class="desc" data-i18n="skills.s2d">HTML · CSS · JavaScript</p>
           <div class="skill-bar"><div class="skill-bar-fill" data-width="85%"></div></div>
         </div>
         <div class="skill-card reveal">
-          <div class="skill-icon">📊</div>
+          <div class="skill-icon">△</div>
           <h3 data-i18n="skills.s3t">数据分析</h3>
           <p class="desc" data-i18n="skills.s3d">SQL · Excel · 数据可视化</p>
           <div class="skill-bar"><div class="skill-bar-fill" data-width="80%"></div></div>
         </div>
         <div class="skill-card reveal">
-          <div class="skill-icon">🤝</div>
+          <div class="skill-icon">□</div>
           <h3 data-i18n="skills.s4t">项目管理</h3>
           <p class="desc" data-i18n="skills.s4d">敏捷开发 · 跨部门协作</p>
           <div class="skill-bar"><div class="skill-bar-fill" data-width="90%"></div></div>
@@ -641,7 +895,7 @@
       </div>
       <div class="projects-grid">
         <div class="project-card reveal">
-          <div class="project-cover">🚀</div>
+          <div class="project-cover g1"><span class="num">01</span></div>
           <div class="project-body">
             <h3 data-i18n="projects.p1t">智能管理平台</h3>
             <p data-i18n="projects.p1d">面向企业的智能管理后台，提供数据看板、权限管理与流程自动化能力。</p>
@@ -653,7 +907,7 @@
           </div>
         </div>
         <div class="project-card reveal">
-          <div class="project-cover">📱</div>
+          <div class="project-cover g2"><span class="num">02</span></div>
           <div class="project-body">
             <h3 data-i18n="projects.p2t">移动应用</h3>
             <p data-i18n="projects.p2d">一款生活服务类 App，覆盖从需求调研到上线运营的全流程。</p>
@@ -665,7 +919,7 @@
           </div>
         </div>
         <div class="project-card reveal">
-          <div class="project-cover">🤖</div>
+          <div class="project-cover g3"><span class="num">03</span></div>
           <div class="project-body">
             <h3 data-i18n="projects.p3t">AI 效率工具</h3>
             <p data-i18n="projects.p3d">基于大模型的效率工具，探索 AI 在产品场景中的落地应用。</p>
@@ -690,22 +944,22 @@
       </div>
       <div class="contact-grid">
         <div class="contact-card reveal">
-          <div class="contact-icon">📧</div>
+          <div class="contact-icon">✉</div>
           <h3 data-i18n="contact.email">邮箱</h3>
-          <p>hello@example.com</p>
+          <p><a class="email" href="mailto:wwwwyitu@163.com">wwwwyitu@163.com</a></p>
         </div>
         <div class="contact-card reveal">
-          <div class="contact-icon">📱</div>
+          <div class="contact-icon">☎</div>
           <h3 data-i18n="contact.phone">电话</h3>
-          <p>+86 138-0000-0000</p>
+          <p>+86 138-****-****</p>
         </div>
         <div class="contact-card reveal">
-          <div class="contact-icon">💬</div>
+          <div class="contact-icon">✎</div>
           <h3 data-i18n="contact.wechat">微信</h3>
-          <p>wangxiaobai</p>
+          <p>wwwwyitu</p>
         </div>
         <div class="contact-card reveal">
-          <div class="contact-icon">📍</div>
+          <div class="contact-icon">⌂</div>
           <h3 data-i18n="contact.city">所在城市</h3>
           <p>Beijing, China</p>
         </div>
@@ -713,7 +967,7 @@
     </div>
   </section>
 
-  <footer data-i18n="footer">© 2025 Wang Xiaobai · 用心打造</footer>
+  <footer><span data-i18n="footer">© 2025 Olivia Wang · 用心打造</span><span class="foot-dot"></span></footer>
 
   <button class="back-top" id="backTop" aria-label="返回顶部">↑</button>
 
@@ -721,8 +975,10 @@
     // ===== 多语言翻译 =====
     const translations = {
       zh: {
+        "announce.text": "可联系合作 · 期待与你交流",
+        "announce.cta": "联系我",
         "nav.home": "首页", "nav.about": "关于", "nav.skills": "技能",
-        "nav.projects": "项目", "nav.contact": "联系",
+        "nav.projects": "项目", "nav.contact": "联系", "nav.cta": "联系我",
         "hero.badge": "可联系合作",
         "hero.hi": "你好，我是",
         "hero.subtitle": "产品经理 & 开发者，专注于打造简洁、优雅且富有价值的数字产品。",
@@ -731,11 +987,17 @@
         "hero.location": "所在地", "hero.exp": "经验", "hero.expValue": "5+ 年",
         "hero.focus": "方向", "hero.focusValue": "产品 · AI",
         "about.eyebrow": "关于", "about.title": "关于我", "about.subtitle": "了解我的背景与工作理念",
-        "about.p1": "你好！我是 <strong>王小柏</strong>，一名热爱产品与技术的产品经理，同时也是一名开发者。",
-        "about.p2": "我相信优秀的产品源于对用户需求的深刻理解与对细节的极致追求。我擅长将复杂的业务逻辑转化为简洁优雅的用户体验，并在产品与技术之间架起桥梁。",
-        "about.li1": "以用户为中心的产品设计思维",
-        "about.li2": "跨职能团队协作与沟通",
-        "about.li3": "快速学习与持续迭代能力",
+        "about.p1": "你好！我是 <strong>Olivia Wang</strong>，一名关注产品与技术的 AI 产品经理，也是一名持续实践的开发者。",
+        "about.p2": "我习惯从真实的用户问题出发，理解技术的边界与可能，再把复杂的业务逻辑和技术能力，转化为清晰、可靠、易用的产品体验。",
+        "about.p3": "在 AI 产品工作中，我不仅关注“能不能实现”，也会持续思考：",
+        "about.t1": "这个能力是否真正解决了用户问题",
+        "about.t2": "用户是否理解、信任并愿意使用它",
+        "about.t3": "如何通过持续验证，让产品变得更准确、更稳定、更有价值",
+        "about.p4": "我相信，好的 AI 产品不只是模型能力的展示，更是技术、场景与用户体验之间的平衡。相比追逐概念，我更愿意沉下心来理解问题、验证假设，并在实践中不断迭代。",
+        "about.li1": "以用户需求为起点，建立清晰的产品判断",
+        "about.li2": "理解 AI 技术能力与局限，推动技术落地为实际价值",
+        "about.li3": "善于在产品、技术与业务之间进行有效沟通",
+        "about.li4": "保持好奇，持续学习，也保持对细节和结果的耐心",
         "about.stat1": "年工作经验", "about.stat2": "完成项目",
         "about.stat3": "合作客户", "about.stat4": "获奖荣誉",
         "skills.eyebrow": "技能", "skills.title": "专业技能", "skills.subtitle": "我掌握的核心能力与工具",
@@ -755,11 +1017,13 @@
         "projects.p3tag1": "大模型", "projects.p3tag2": "效率工具",
         "contact.eyebrow": "联系", "contact.title": "联系我", "contact.subtitle": "期待与你交流与合作",
         "contact.email": "邮箱", "contact.phone": "电话", "contact.wechat": "微信", "contact.city": "所在城市",
-        "footer": "© 2025 Wang Xiaobai · 用心打造"
+        "footer": "© 2025 Olivia Wang · 用心打造"
       },
       en: {
+        "announce.text": "Available for work · Let's talk",
+        "announce.cta": "Contact",
         "nav.home": "Home", "nav.about": "About", "nav.skills": "Skills",
-        "nav.projects": "Projects", "nav.contact": "Contact",
+        "nav.projects": "Projects", "nav.contact": "Contact", "nav.cta": "Get in Touch",
         "hero.badge": "Available for work",
         "hero.hi": "Hi, I'm",
         "hero.subtitle": "Product manager & developer crafting simple, elegant, and valuable digital products.",
@@ -768,11 +1032,17 @@
         "hero.location": "Location", "hero.exp": "Experience", "hero.expValue": "5+ years",
         "hero.focus": "Focus", "hero.focusValue": "Product · AI",
         "about.eyebrow": "About", "about.title": "About Me", "about.subtitle": "My background and work philosophy",
-        "about.p1": "Hi! I'm <strong>Wang Xiaobai</strong>, a product manager passionate about product and technology, and also a developer.",
-        "about.p2": "I believe great products come from a deep understanding of user needs and relentless attention to detail. I excel at turning complex business logic into clean, elegant user experiences and bridging the gap between product and technology.",
-        "about.li1": "User-centered product design thinking",
-        "about.li2": "Cross-functional collaboration and communication",
-        "about.li3": "Fast learning and continuous iteration",
+        "about.p1": "Hi! I'm <strong>Olivia Wang</strong>, an AI product manager focused on product and technology — and a developer who keeps building in practice.",
+        "about.p2": "I start from real user problems, understand the boundaries and possibilities of technology, and turn complex business logic and technical capability into clear, reliable, and easy-to-use product experiences.",
+        "about.p3": "In AI product work, beyond asking “can we build it”, I keep thinking about:",
+        "about.t1": "Does this capability actually solve the user's problem?",
+        "about.t2": "Do users understand, trust, and want to use it?",
+        "about.t3": "How can continuous validation make the product more accurate, more stable, and more valuable?",
+        "about.p4": "I believe a great AI product is not just a showcase of model capability, but a balance of technology, context, and user experience. Rather than chasing buzzwords, I'd rather slow down to understand the problem, test assumptions, and keep iterating in practice.",
+        "about.li1": "Starting from user needs to build clear product judgment",
+        "about.li2": "Understanding AI capabilities and limits, and turning technology into real value",
+        "about.li3": "Communicating effectively across product, engineering, and business",
+        "about.li4": "Staying curious, learning continuously, and staying patient with details and results",
         "about.stat1": "Years Experience", "about.stat2": "Projects Done",
         "about.stat3": "Clients", "about.stat4": "Awards",
         "skills.eyebrow": "Skills", "skills.title": "Professional Skills", "skills.subtitle": "Core capabilities and tools I master",
@@ -792,11 +1062,13 @@
         "projects.p3tag1": "LLM", "projects.p3tag2": "Productivity",
         "contact.eyebrow": "Contact", "contact.title": "Get in Touch", "contact.subtitle": "Let's talk and work together",
         "contact.email": "Email", "contact.phone": "Phone", "contact.wechat": "WeChat", "contact.city": "City",
-        "footer": "© 2025 Wang Xiaobai · Made with ♥"
+        "footer": "© 2025 Olivia Wang · Made with ♥"
       },
       ja: {
+        "announce.text": "ご連絡歓迎 · お気軽にどうぞ",
+        "announce.cta": "連絡する",
         "nav.home": "ホーム", "nav.about": "私について", "nav.skills": "スキル",
-        "nav.projects": "プロジェクト", "nav.contact": "お問い合わせ",
+        "nav.projects": "プロジェクト", "nav.contact": "お問い合わせ", "nav.cta": "お問い合わせ",
         "hero.badge": "ご連絡歓迎",
         "hero.hi": "こんにちは、",
         "hero.subtitle": "シンプルでエレガント、価値あるデジタル製品をつくるプロダクトマネージャー兼デベロッパー。",
@@ -805,11 +1077,17 @@
         "hero.location": "所在地", "hero.exp": "経験", "hero.expValue": "5年以上",
         "hero.focus": "専門", "hero.focusValue": "プロダクト · AI",
         "about.eyebrow": "私について", "about.title": "私について", "about.subtitle": "私のバックグラウンドと仕事の理念",
-        "about.p1": "こんにちは！私は <strong>王小柏</strong>、プロダクトとテクノロジーを愛するプロダクトマネージャーであり、デベロッパーでもあります。",
-        "about.p2": "優れた製品は、ユーザーへの深い理解と細部へのこだわりから生まれると信じています。複雑なビジネスロジックをシンプルでエレガントな体験に変え、プロダクトとテクノロジーの橋渡しをすることが得意です。",
-        "about.li1": "ユーザー中心のプロダクト設計思考",
-        "about.li2": "部門横断チームでの協働とコミュニケーション",
-        "about.li3": "素早い学習と継続的な改善",
+        "about.p1": "こんにちは！私は <strong>Olivia Wang</strong>。プロダクトとテクノロジーに関心を持つ AI プロダクトマネージャーであり、実践を続けるデベロッパーでもあります。",
+        "about.p2": "私は実際のユーザー課題から出発し、技術の限界と可能性を理解したうえで、複雑なビジネスロジックと技術力を、明確で信頼でき、使いやすいプロダクト体験へと変えていきます。",
+        "about.p3": "AI プロダクトの仕事では、「実現できるか」だけでなく、次のことを考え続けています：",
+        "about.t1": "その機能は本当にユーザーの問題を解決しているか",
+        "about.t2": "ユーザーが理解し、信頼し、使いたいと思えるか",
+        "about.t3": "継続的な検証によって、より正確で、より安定し、より価値あるものにできるか",
+        "about.p4": "良い AI プロダクトとは、モデル能力の見せ場ではなく、技術・シーン・ユーザー体験のバランスだと思います。概念を追うよりも、問題を理解し、仮説を検証し、実践のなかで繰り返し改善していくことを大切にしています。",
+        "about.li1": "ユーザー課題を起点に、明確なプロダクト判断を築く",
+        "about.li2": "AI の能力と限界を理解し、技術を実際の価値へと落とし込む",
+        "about.li3": "プロダクト・技術・ビジネスの間で効果的にコミュニケーションする",
+        "about.li4": "好奇心を持ち、学び続け、細部と結果に対して忍耐強く向き合う",
         "about.stat1": "年の経験", "about.stat2": "完了プロジェクト",
         "about.stat3": "取引先", "about.stat4": "受賞歴",
         "skills.eyebrow": "スキル", "skills.title": "専門スキル", "skills.subtitle": "私が持つ主要な能力とツール",
@@ -829,7 +1107,7 @@
         "projects.p3tag1": "LLM", "projects.p3tag2": "生産性",
         "contact.eyebrow": "お問い合わせ", "contact.title": "お問い合わせ", "contact.subtitle": "ぜひご連絡ください",
         "contact.email": "メール", "contact.phone": "電話", "contact.wechat": "WeChat", "contact.city": "都市",
-        "footer": "© 2025 Wang Xiaobai · 心を込めて制作"
+        "footer": "© 2025 Olivia Wang · 心を込めて制作"
       }
     };
 
@@ -854,13 +1132,18 @@
     // 初始化语言
     applyLang(localStorage.getItem('lang') || 'zh');
 
+    // ===== 公告栏关闭 =====
+    document.getElementById('announceClose').addEventListener('click', () => {
+      document.getElementById('announce').classList.add('hidden');
+    });
+
     // ===== 导航滚动高亮 =====
     const sections = document.querySelectorAll('section[id]');
     const navAnchors = document.querySelectorAll('.nav-links a');
     window.addEventListener('scroll', () => {
       let current = '';
       sections.forEach(s => {
-        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+        if (window.scrollY >= s.offsetTop - 140) current = s.id;
       });
       navAnchors.forEach(a => {
         a.classList.toggle('active', a.getAttribute('href') === '#' + current);
