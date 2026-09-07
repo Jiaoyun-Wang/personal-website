@@ -103,6 +103,20 @@
     .contact-copy p{color:rgba(255,255,255,.9)}
     .contact-link{border-color:rgba(255,255,255,.62)}
     .contact-link small{opacity:.9}
+    /* Article deck: a content-first adaptation of the elastic Bounce Cards pattern. */
+    .article-grid--deck{position:relative;display:block;height:510px;margin-top:20px;isolation:isolate;perspective:1400px}
+    .article-grid--deck .article-card{position:absolute;top:24px;left:50%;width:min(52vw,620px);min-height:410px;grid-column:auto;transform-origin:50% 86%;transform:translateX(calc(-50% + var(--deck-x,0px) + var(--deck-push,0px))) translateY(var(--deck-y,0px)) rotate(var(--deck-rotate,0deg));box-shadow:0 22px 54px rgba(24,28,42,.13);transition:transform .42s var(--spring),opacity .28s ease,border-color .2s,box-shadow .42s var(--ease);will-change:transform}
+    .article-grid--deck .article-card--featured{min-height:410px}
+    .article-grid--deck .article-card h3,.article-grid--deck .article-card--featured h3{font-size:clamp(1.75rem,3vw,2.6rem)}
+    .article-grid--deck .article-card.is-active{z-index:40!important;transform:translateX(calc(-50% + var(--deck-x,0px))) translateY(calc(var(--deck-y,0px) - 18px)) rotate(0deg) scale(1.035);border-color:var(--line-strong);box-shadow:0 34px 82px rgba(24,28,42,.2)}
+    .article-grid--deck.has-active .article-card:not(.is-active){opacity:.88}
+    .article-grid--deck.deck-ready .article-card:not([hidden]){animation:article-bounce-in .82s var(--spring) backwards;animation-delay:calc(80ms + var(--deck-order,0)*70ms)}
+    @keyframes article-bounce-in{0%{opacity:0;transform:translateX(calc(-50% + var(--deck-x,0px))) translateY(calc(var(--deck-y,0px) + 70px)) rotate(var(--deck-rotate,0deg)) scale(.68)}68%{opacity:1;transform:translateX(calc(-50% + var(--deck-x,0px))) translateY(calc(var(--deck-y,0px) - 7px)) rotate(var(--deck-rotate,0deg)) scale(1.025)}100%{opacity:1;transform:translateX(calc(-50% + var(--deck-x,0px))) translateY(var(--deck-y,0px)) rotate(var(--deck-rotate,0deg)) scale(1)}}
+    @media(max-width:760px){.article-grid--deck{display:grid;height:auto!important;margin-top:0}.article-grid--deck .article-card,.article-grid--deck .article-card--featured{position:relative;inset:auto;width:auto;min-height:340px;z-index:auto!important;transform:none!important;opacity:1}.article-grid--deck .article-card h3,.article-grid--deck .article-card--featured h3{font-size:clamp(1.55rem,8vw,2.2rem)}.article-grid--deck.deck-ready .article-card:not([hidden]){animation:article-mobile-in .55s var(--ease) backwards;animation-delay:calc(var(--deck-order,0)*55ms)}@keyframes article-mobile-in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}}
+    @media(hover:none){.article-grid--deck{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));height:auto!important;margin-top:0;gap:18px}.article-grid--deck .article-card,.article-grid--deck .article-card--featured{position:relative;inset:auto;width:auto;min-height:340px;z-index:auto!important;transform:none!important;opacity:1;will-change:auto}.article-grid--deck .article-card--featured{grid-column:1/-1}}
+    @media(hover:none) and (max-width:760px){.article-grid--deck{grid-template-columns:1fr}.article-grid--deck .article-card--featured{grid-column:auto}}
+    @media(prefers-reduced-motion:reduce){.article-grid--deck{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));height:auto!important;margin-top:0;gap:18px}.article-grid--deck .article-card,.article-grid--deck .article-card--featured{position:relative;inset:auto;width:auto;min-height:340px;z-index:auto!important;transform:none!important;opacity:1;animation:none!important;will-change:auto}.article-grid--deck .article-card--featured{grid-column:1/-1}}
+    @media(prefers-reduced-motion:reduce) and (max-width:760px){.article-grid--deck{grid-template-columns:1fr}.article-grid--deck .article-card--featured{grid-column:auto}}
   </style>
 </head>
 <body>
@@ -241,6 +255,11 @@
       {platform:'wechat',date:'2026-08-16',title:'Claude给文字加水印：人类写作要变天了？',summary:'当 AI 修改、翻译与协作写作都可能留下可检测的痕迹，我们需要重新讨论写作、版权与“AI 参与”的边界。',tags:['Claude','AI 写作','内容水印'],url:'https://mp.weixin.qq.com/s/MWVlEFSskm--FDxk93r3kA'}
     ].sort(function(a,b){return b.date.localeCompare(a.date)});
     let currentArticleFilter='all';
+    function articleMotionReduced(){return window.matchMedia('(prefers-reduced-motion: reduce)').matches}
+    function resetArticleDeck(){const grid=document.getElementById('articleGrid');if(!grid)return;grid.classList.remove('has-active');grid.querySelectorAll('.article-card').forEach(function(card){card.classList.remove('is-active');card.style.setProperty('--deck-push','0px')});grid.activeCard=null}
+    function activateArticleCard(card){const grid=document.getElementById('articleGrid');if(!grid||!card||card.hidden||window.matchMedia('(max-width:760px)').matches||articleMotionReduced())return;const cards=[...grid.querySelectorAll('.article-card:not([hidden])')],activeIndex=cards.indexOf(card);if(activeIndex<0||grid.activeCard===card)return;grid.activeCard=card;grid.classList.add('has-active');cards.forEach(function(item,index){item.classList.toggle('is-active',item===card);item.style.setProperty('--deck-push',item===card?'0px':(index<activeIndex?'-92px':'92px'))})}
+    function layoutArticleDeck(animate){const grid=document.getElementById('articleGrid');if(!grid)return;const cards=[...grid.querySelectorAll('.article-card:not([hidden])')];grid.classList.add('article-grid--deck');resetArticleDeck();if(window.matchMedia('(max-width:760px),(hover:none)').matches||articleMotionReduced()){grid.style.removeProperty('height');cards.forEach(function(card,index){card.style.setProperty('--deck-order',index)});return}const gridWidth=grid.clientWidth,cardWidth=Math.min(620,Math.max(420,gridWidth*.52)),usable=Math.max(0,gridWidth-cardWidth-24),step=cards.length>1?Math.min(116,usable/(cards.length-1)):0,center=(cards.length-1)/2;cards.forEach(function(card,index){const position=index-center;card.style.setProperty('--deck-x',position*step+'px');card.style.setProperty('--deck-y',Math.abs(position)*4+'px');card.style.setProperty('--deck-rotate',position*2+'deg');card.style.setProperty('--deck-order',index);card.style.zIndex=String(cards.length-index)});const tallest=cards.reduce(function(height,card){return Math.max(height,card.scrollHeight)},410);grid.style.height=Math.max(510,tallest+74)+'px';if(animate){grid.classList.remove('deck-ready');void grid.offsetWidth;grid.classList.add('deck-ready')}}
+    function bindArticleDeck(){const grid=document.getElementById('articleGrid');if(!grid||grid.deckBound)return;grid.deckBound=true;grid.addEventListener('pointerover',function(event){if(!window.matchMedia('(pointer: fine)').matches)return;activateArticleCard(event.target.closest('.article-card'))});grid.addEventListener('pointerleave',resetArticleDeck);grid.addEventListener('focusin',function(event){activateArticleCard(event.target.closest('.article-card'))});grid.addEventListener('focusout',function(event){const next=event.relatedTarget&&event.relatedTarget.closest?event.relatedTarget.closest('.article-card'):null;if(next&&grid.contains(next))activateArticleCard(next);else resetArticleDeck()})}
     function renderArticles(lang){
       const dict=translations[lang]||translations.zh,grid=document.getElementById('articleGrid');
       if(!grid)return;
@@ -249,7 +268,7 @@
         return '<a class="article-card'+(article.featured?' article-card--featured':'')+'" data-platform="'+article.platform+'" href="'+article.url+'" target="_blank" rel="noopener noreferrer" lang="zh-CN" aria-label="'+article.title+'，'+dict['articles.read']+'，'+dict['articles.newWindow']+'"><div class="article-meta"><span class="article-source">'+source+(article.platform==='wechat'?' · 巴果三的棒老二':'')+'</span><time datetime="'+article.date+'">'+article.date.replaceAll('-','.')+'</time></div><div class="article-copy"><h3>'+article.title+'</h3><p>'+article.summary+'</p></div><div class="article-bottom"><div class="article-tags">'+article.tags.map(function(tag){return '<span>'+tag+'</span>'}).join('')+'</div><span class="article-cta">'+dict['articles.read']+'<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></a>';
       }).join('');
       document.querySelectorAll('.article-filter').forEach(function(button){const filter=button.dataset.filter;button.querySelector('.filter-count').textContent=filter==='all'?articles.length:articles.filter(function(article){return article.platform===filter}).length});
-      filterArticles(currentArticleFilter,lang,false);
+      bindArticleDeck();filterArticles(currentArticleFilter,lang,false);
     }
     function filterArticles(filter,lang,announce){
       currentArticleFilter=filter;
@@ -258,11 +277,13 @@
       cards.forEach(function(card){const show=filter==='all'||card.dataset.platform===filter;card.hidden=!show;if(show)visible+=1});
       document.querySelectorAll('.article-filter').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.filter===filter))});
       document.getElementById('articleTotal').textContent=visible+' '+(visible===1?'ARTICLE':'ARTICLES');
+      layoutArticleDeck(true);
       if(announce)document.getElementById('articleStatus').textContent=dict['articles.count'].replace('{count}',visible);
     }
     function applyLang(lang){const dict=translations[lang]||translations.zh;document.querySelectorAll('[data-i18n]').forEach(function(node){const value=dict[node.dataset.i18n];if(value!==undefined)node.innerHTML=value});document.querySelectorAll('[data-i18n-aria]').forEach(function(node){const value=dict[node.dataset.i18nAria];if(value!==undefined)node.setAttribute('aria-label',value)});document.documentElement.lang=lang==='zh'?'zh-CN':lang;document.querySelectorAll('#langSwitch button').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.lang===lang))});renderArticles(lang);localStorage.setItem('lang',lang)}
     document.getElementById('langSwitch').addEventListener('click',function(event){const button=event.target.closest('button[data-lang]');if(button)applyLang(button.dataset.lang)});applyLang(localStorage.getItem('lang')||'zh');
     document.getElementById('articleFilters').addEventListener('click',function(event){const button=event.target.closest('button[data-filter]');if(button)filterArticles(button.dataset.filter,localStorage.getItem('lang')||'zh',true)});
+    let articleResizeTimer;window.addEventListener('resize',function(){clearTimeout(articleResizeTimer);articleResizeTimer=setTimeout(function(){layoutArticleDeck(false)},120)},{passive:true});
     const topNote=document.getElementById('topNote');document.getElementById('topNoteClose').addEventListener('click',function(){topNote.hidden=true});
     const menuButton=document.getElementById('menuButton'),navLinks=document.getElementById('navLinks');
     function closeMenu(){navLinks.classList.remove('open');menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','打开菜单');document.body.classList.remove('menu-open')}
